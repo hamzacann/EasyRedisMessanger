@@ -29,7 +29,6 @@ namespace EasyRedisMessanger
             _cacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
             _subscriber = _connection.GetSubscriber(); // Initializes the subscriber.
             _db = connection.GetDatabase();
-            ((RedisCacheManager)_cacheManager).SubscribeToExpireEvents();
         }
 
         /// <inheritdoc/>
@@ -40,6 +39,7 @@ namespace EasyRedisMessanger
         {
             if (includeHistory)
             {
+                ((RedisCacheManager)_cacheManager).SubscribeToExpireEvents(channelName);
                 var messages = _cacheManager.GetHistoricalMessages(channelName);
                 foreach (var message in messages)
                 {
