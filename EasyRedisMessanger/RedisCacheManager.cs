@@ -59,11 +59,10 @@ namespace EasyRedisMessanger
         public event EventHandler<KeyExpiredEventArgs> KeyExpired;
 
         /// <summary>
-        /// Subscribes to Redis key expiration events for the default database (0).
+        /// Subscribes to Redis key expiration events for the listening channel.
         /// </summary>
-        public void SubscribeToExpireEvents(string channelName)
+        public void SubscribeToExpireEvents(string channelName, ISubscriber sub)
         {
-            var sub = _connection.GetSubscriber();
             sub.Subscribe("__keyevent@0__:expired", (channel, message) =>
             {
                 var expiredKey = (string)message;
@@ -74,6 +73,14 @@ namespace EasyRedisMessanger
                 var value = _db.StringGet(expiredKey);
                 KeyExpired?.Invoke(this, new KeyExpiredEventArgs(expiredKey, value));
             });
+        }
+
+        /// <summary>
+        /// Unsubscribes to Redis key expiration events for the listener.
+        /// </summary>
+        public void UnsubscribeFromExpireEvents(ISubscriber sub)
+        {
+            sub.Unsubscribe("__keyevent@0__:expired");
         }
 
     }

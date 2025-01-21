@@ -39,7 +39,7 @@ namespace EasyRedisMessanger
         {
             if (includeHistory)
             {
-                ((RedisCacheManager)_cacheManager).SubscribeToExpireEvents(channelName);
+                ((RedisCacheManager)_cacheManager).SubscribeToExpireEvents(channelName, _subscriber);
                 var messages = _cacheManager.GetHistoricalMessages(channelName);
                 foreach (var message in messages)
                 {
@@ -65,6 +65,7 @@ namespace EasyRedisMessanger
                 {
                     _db.KeyDelete(key);
                 }
+                ((RedisCacheManager)_cacheManager).UnsubscribeFromExpireEvents(_subscriber);
             }
         }
 
