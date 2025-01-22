@@ -23,12 +23,13 @@ namespace EasyRedisMessanger
         /// </summary>
         /// <param name="connection">The Redis connection multiplexer.</param>
         /// <param name="cacheManager">The cache manager.</param>
-        public RedisListener(IConnectionMultiplexer connection, ICacheManager cacheManager)
+        /// <param name="db">Redis db.</param>
+        public RedisListener(IConnectionMultiplexer connection, ICacheManager cacheManager, IDatabase? db)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _cacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
             _subscriber = _connection.GetSubscriber(); // Initializes the subscriber.
-            _db = connection.GetDatabase();
+            _db = db ?? _connection.GetDatabase();
         }
 
         /// <inheritdoc/>

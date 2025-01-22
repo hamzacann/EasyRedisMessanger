@@ -19,10 +19,10 @@ namespace EasyRedisMessanger
         /// Initializes a new instance of the <see cref="RedisCacheManager"/> class.
         /// </summary>
         /// <param name="connection">The Redis connection multiplexer.</param>
-        public RedisCacheManager(IConnectionMultiplexer connection)
+        public RedisCacheManager(IConnectionMultiplexer connection, IDatabase? db)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            _db = _connection.GetDatabase();
+            _db = db ?? _connection.GetDatabase();
         }
 
         /// <inheritdoc />
