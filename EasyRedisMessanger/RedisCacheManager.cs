@@ -14,6 +14,7 @@ namespace EasyRedisMessanger
     {
         private readonly IConnectionMultiplexer _connection;
         public readonly IDatabase _db;
+        private readonly IServer _server;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RedisCacheManager"/> class.
@@ -23,6 +24,7 @@ namespace EasyRedisMessanger
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _db = db ?? _connection.GetDatabase();
+            _server = _connection.GetServer(_db.IdentifyEndpoint()); // Cache the server instance
         }
 
         /// <inheritdoc />
@@ -44,8 +46,7 @@ namespace EasyRedisMessanger
         /// <inheritdoc />
         public List<string> GetHistoricalMessages(string channelName)
         {
-            var server = _db.Multiplexer.GetServer(_db.IdentifyEndpoint());
-            var keys = server.Keys(pattern: $"{channelName}+*");
+            var keys = _server.Keys(pattern: $"{channelName}+*"); // Use cached server instance
             var messages = new List<string>();
             foreach (var key in keys)
             {
